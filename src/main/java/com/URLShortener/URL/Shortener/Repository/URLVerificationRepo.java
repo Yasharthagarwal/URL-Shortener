@@ -10,7 +10,7 @@ import java.util.Optional;
 
 
 @Repository
-public interface URLVerification extends JpaRepository<URLAttributes,Long> {
+public interface URLVerificationRepo extends JpaRepository<URLAttributes,Long> {
 
 
     @Query("select u.shortId from URLAttributes u where u.shortId=:newShortId")

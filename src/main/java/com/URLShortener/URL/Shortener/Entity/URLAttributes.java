@@ -21,14 +21,12 @@ public class URLAttributes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "url_id")
-    private Long urlId;
+    @Column(name = "urlId")
+    private Long id;
 
     @Column(name = "long_url")
     private String longUrl;
 
-//    @Column(name = "short_url")
-//    private String shortUrl;
 
     @Column(name = "short_id")
     private String shortId;

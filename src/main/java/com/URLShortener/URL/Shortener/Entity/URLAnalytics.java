@@ -20,11 +20,12 @@ public class URLAnalytics {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(name = "dateTime")
     private LocalDateTime localDateTime;
 
 
-    @JoinColumn(name = "url_id")
-    @ManyToOne
+    @JoinColumn(name = "urlId")
+    @ManyToOne(cascade = CascadeType.ALL)
     private URLAttributes urlAttributes;
 
 }
