@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Set;
 
 @Entity
 @Table(name = "url_attributes")
@@ -21,7 +22,7 @@ public class URLAttributes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "url_id")
-    private Long id;
+    private Long urlId;
 
     @Column(name = "long_url")
     private String longUrl;
@@ -33,7 +34,8 @@ public class URLAttributes {
     private String shortId;
 
     @Column(name = "timeStamps")
-    private ArrayList<LocalDateTime> timestamps;
+    @OneToMany(mappedBy = "urlAttributes")
+    private Set<URLAnalytics> urlAnalytics;
 
     @Column(name = "clicks")
     private Long clicks;

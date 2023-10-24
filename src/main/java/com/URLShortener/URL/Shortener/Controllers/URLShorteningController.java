@@ -1,21 +1,18 @@
 package com.URLShortener.URL.Shortener.Controllers;
 
 
+import com.URLShortener.URL.Shortener.Entity.URLAnalytics;
 import com.URLShortener.URL.Shortener.Entity.URLAttributes;
+import com.URLShortener.URL.Shortener.Repository.URLAnalyticsRepository;
 import com.URLShortener.URL.Shortener.Repository.URLVerification;
 import com.URLShortener.URL.Shortener.Services.RandomUtilGenerator;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
-import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/")
@@ -30,6 +27,9 @@ public class URLShorteningController {
     @Autowired
     private URLVerification urlVerification;
 
+    @Autowired
+    private URLAnalyticsRepository urlAnalyticsRepo;
+
     @PostMapping("/shorten-url")
     public String getShortenUrl(@RequestBody String longUrl){
 
@@ -37,11 +37,15 @@ public class URLShorteningController {
         Optional<URLAttributes> presentUrlInDB = urlVerification.hasURL(longUrl);
         LocalDateTime localDateTime = LocalDateTime.now();
 
+        System.out.println(localDateTime);
+
         if(!presentUrlInDB.isEmpty()){
             URLAttributes urlAttributes = presentUrlInDB.get();
-            ArrayList<LocalDateTime> timeStamps = urlAttributes.getTimestamps();
-            timeStamps.add(localDateTime);
-            urlAttributes.setTimestamps(new ArrayList<>(timeStamps));
+            URLAnalytics urlAnalytics = new URLAnalytics();
+            urlAnalytics.setLocalDateTime(localDateTime);
+            urlAnalytics.setUrlAttributes(urlAttributes);
+            urlAnalyticsRepo.save(urlAnalytics);
+            urlAttributes.getUrlAnalytics().add(urlAnalytics);
             urlAttributes.setClicks(urlAttributes.getClicks()+1);
             urlVerification.save(urlAttributes);
 
@@ -53,7 +57,13 @@ public class URLShorteningController {
             urlAttributes.setLongUrl(longUrl);
             urlAttributes.setShortId(shortId);
             urlAttributes.setClicks(1L);
-            urlAttributes.setTimestamps(new ArrayList<>(Collections.singleton(localDateTime)));
+            URLAnalytics urlAnalytics = new URLAnalytics();
+            urlAnalytics.setLocalDateTime(localDateTime);
+            Set<URLAnalytics> urlAnalyticsSet = new HashSet<>();
+            urlAnalyticsSet.add(urlAnalytics);
+            urlAnalytics.setUrlAttributes(urlAttributes);
+            urlAnalyticsRepo.save(urlAnalytics);
+            urlAttributes.setUrlAnalytics(urlAnalyticsSet);
             urlVerification.save(urlAttributes);
 
             return shortId;
