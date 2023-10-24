@@ -6,10 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 
 @Entity
 @Table(name = "url_attributes")
@@ -27,11 +26,14 @@ public class URLAttributes {
     @Column(name = "long_url")
     private String longUrl;
 
-    @Column(name = "short_url")
-    private String shortUrl;
+//    @Column(name = "short_url")
+//    private String shortUrl;
+
+    @Column(name = "short_id")
+    private String shortId;
 
     @Column(name = "timeStamps")
-    private ArrayList<Date> timestamps;
+    private ArrayList<LocalDateTime> timestamps;
 
     @Column(name = "clicks")
     private Long clicks;
