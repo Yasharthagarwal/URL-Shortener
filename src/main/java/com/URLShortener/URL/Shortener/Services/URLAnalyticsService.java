@@ -18,20 +18,36 @@ public class URLAnalyticsService {
     private URLAnalyticsRepo urlAnalyticsRepo;
 
     public ResponseEntity<?> getAnalytics(String url) {
-        String shortId = url.substring(url.length()-8);
+        try {
+            if(url.length()==8) {
+                String shortId = url.substring(url.length()-8);
 
-        ArrayList<URLAnalytics> analytics = urlAnalyticsRepo.findByUrl(shortId);
-        URLAnalyticResponse urlAnalyticResponse = new URLAnalyticResponse();
-        ArrayList<LocalDateTime> timestamps = new ArrayList<>();
-        Long totalClicks = Long.valueOf(analytics.size());
+                ArrayList<URLAnalytics> analytics = urlAnalyticsRepo.findByUrl(shortId);
+                URLAnalyticResponse urlAnalyticResponse = new URLAnalyticResponse();
 
-        for(URLAnalytics urlAnalytics : analytics){
-            timestamps.add(urlAnalytics.getLocalDateTime());
+                if (!analytics.isEmpty()) {
+                    ArrayList<LocalDateTime> timestamps = new ArrayList<>();
+                    Long totalClicks = Long.valueOf(analytics.size());
+
+                    for (URLAnalytics urlAnalytics : analytics) {
+                        timestamps.add(urlAnalytics.getLocalDateTime());
+                    }
+                    urlAnalyticResponse.setTimeStamp(timestamps);
+                    urlAnalyticResponse.setClicks(totalClicks);
+
+                    return ResponseEntity.ok().body(urlAnalyticResponse);
+                } else {
+                    urlAnalyticResponse.setClicks(0L);
+                    urlAnalyticResponse.setTimeStamp(new ArrayList<>());
+                    return ResponseEntity.ok().body(urlAnalyticResponse);
+                }
+            }
+            else{
+                return ResponseEntity.ok().body("You have entered the wrong URL. Please enter the URL again !!");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        urlAnalyticResponse.setTimeStamp(timestamps);
-        urlAnalyticResponse.setClicks(totalClicks);
-
-        return ResponseEntity.ok().body(urlAnalyticResponse);
     }
 
 

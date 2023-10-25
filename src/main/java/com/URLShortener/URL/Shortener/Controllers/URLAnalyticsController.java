@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class URLAnalyticsController {
 
 
-
-
     @Autowired
     private URLAnalyticsService urlAnalyticsService;
 
@@ -22,7 +20,11 @@ public class URLAnalyticsController {
     @GetMapping("/{url}")
     public ResponseEntity<?> getAnalytics(@PathVariable("url") String url){
 
-        return urlAnalyticsService.getAnalytics(url);
+        try {
+            return urlAnalyticsService.getAnalytics(url);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

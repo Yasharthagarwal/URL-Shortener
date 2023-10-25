@@ -30,44 +30,56 @@ public class URLShorteningService {
 
 
         public String generateAlphanumeric(int length) {
-            String shortId = RandomStringUtils.randomAlphanumeric(SHORT_ID_LENGTH);
-            return urlVerificationRepo.hasShortId(shortId) == shortId?generateAlphanumeric(SHORT_ID_LENGTH):shortId;
+            try {
+                String shortId = RandomStringUtils.randomAlphanumeric(SHORT_ID_LENGTH);
+                return urlVerificationRepo.hasShortId(shortId) == shortId?generateAlphanumeric(SHORT_ID_LENGTH):shortId;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
 
         public ResponseEntity<?> getShortUrl(String longUrl) {
-            String shortId = generateAlphanumeric(SHORT_ID_LENGTH);
-            Optional<URLAttributes> presentUrlInDB = urlVerificationRepo.hasURL(longUrl);
+            try {
+                String shortId = generateAlphanumeric(SHORT_ID_LENGTH);
+                Optional<URLAttributes> presentUrlInDB = urlVerificationRepo.hasURL(longUrl);
 
-            if(!presentUrlInDB.isEmpty()){
-                URLAttributes urlAttributes = presentUrlInDB.get();
+                if(!presentUrlInDB.isEmpty()){
+                    URLAttributes urlAttributes = presentUrlInDB.get();
 
-                return ResponseEntity.ok().body("http://localhost:8080/" + urlAttributes.getShortId());
+                    return ResponseEntity.ok().body("http://localhost:8080/" + urlAttributes.getShortId());
+                }
+                else{
+                    URLAttributes urlAttributes = new URLAttributes();
+                    urlAttributes.setLongUrl(longUrl);
+                    urlAttributes.setShortId(shortId);
+
+                    urlVerificationRepo.save(urlAttributes);
+
+                    return ResponseEntity.ok().body("http://localhost:8080/" + shortId);
+
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            else{
-                URLAttributes urlAttributes = new URLAttributes();
-                urlAttributes.setLongUrl(longUrl);
-                urlAttributes.setShortId(shortId);
-
-                urlVerificationRepo.save(urlAttributes);
-
-                return ResponseEntity.ok().body("http://localhost:8080/" + shortId);
-
-            }
-    }
+        }
 
         public URLAttributes saveAnalytics(String shortId) {
-            Optional<URLAttributes> urlObject = urlVerificationRepo.findByshortId(shortId);
-            LocalDateTime localDateTime = LocalDateTime.now();
-            URLAnalytics urlAnalytics = new URLAnalytics();
-            urlAnalytics.setClicks(1L);
-            urlAnalytics.setLocalDateTime(localDateTime);
-            urlAnalytics.setUrlAttributes(urlObject.get());
-            urlObject.get().getUrlAnalytics().add(urlAnalytics);
-            urlAnalyticsRepo.save(urlAnalytics);
+            try {
+                Optional<URLAttributes> urlObject = urlVerificationRepo.findByshortId(shortId);
+                LocalDateTime localDateTime = LocalDateTime.now();
+                URLAnalytics urlAnalytics = new URLAnalytics();
+                urlAnalytics.setClicks(1L);
+                urlAnalytics.setLocalDateTime(localDateTime);
+                urlAnalytics.setUrlAttributes(urlObject.get());
+                urlObject.get().getUrlAnalytics().add(urlAnalytics);
+                urlAnalyticsRepo.save(urlAnalytics);
 
-            urlVerificationRepo.save(urlObject.get());
+                urlVerificationRepo.save(urlObject.get());
 
-            return urlObject.get();
+                return urlObject.get();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 }

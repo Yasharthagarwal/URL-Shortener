@@ -35,13 +35,21 @@ public class URLShorteningController {
     @PostMapping("/shorten-url")
     public ResponseEntity<?> getShortenUrl(@RequestBody String longUrl){
 
-        return urlShorteningService.getShortUrl(longUrl);
+        try {
+            return urlShorteningService.getShortUrl(longUrl);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @GetMapping("{shortId}")
     public void redirect(@PathVariable("shortId") String shortId, HttpServletResponse httpServletResponse) throws IOException {
-        httpServletResponse.sendRedirect(urlShorteningService.saveAnalytics(shortId).getLongUrl());
+        try {
+            httpServletResponse.sendRedirect(urlShorteningService.saveAnalytics(shortId).getLongUrl());
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
     }
 
 
