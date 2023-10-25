@@ -52,7 +52,7 @@ public class URLShorteningService {
                 urlAnalyticsRepo.save(urlAnalytics);
                 urlVerificationRepo.save(urlAttributes);
 
-                return urlAttributes.getShortId();
+                return "http://localhost:8080/" + urlAttributes.getShortId();
 
             }
             else{
@@ -73,7 +73,7 @@ public class URLShorteningService {
                 urlAnalyticsRepo.save(urlAnalytics);
                 urlVerificationRepo.save(urlAttributes);
 
-                return shortId;
+                return "http://localhost:8080/" + shortId;
 
             }
     }

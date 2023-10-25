@@ -11,6 +11,6 @@ import java.util.ArrayList;
 @Repository
 public interface URLAnalyticsRepo extends JpaRepository<URLAnalytics,Long> {
 
-    @Query("select u from URLAnalytics u where u.urlAttributes.shortId=:url")
-    ArrayList<URLAnalytics> findByUrl(@Param("url") String url);
+    @Query("select u from URLAnalytics u where u.urlAttributes.shortId=:newShortId")
+    ArrayList<URLAnalytics> findByUrl(@Param("newShortId") String newShortId);
 }

@@ -21,7 +21,9 @@ public class URLAnalyticsController {
     @GetMapping("/{url}")
     public URLAnalyticResponse getAnalytics(@PathVariable("url") String url){
 
-        return urlAnalyticsService.getAnalytics(url);
+        String shortId = url.substring(url.length()-8);
+
+        return urlAnalyticsService.getAnalytics(shortId);
 
     }
 
