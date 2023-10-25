@@ -35,7 +35,6 @@ public class URLAttributes {
     @OneToMany(mappedBy = "urlAttributes")
     private Set<URLAnalytics> urlAnalytics;
 
-    @Column(name = "clicks")
-    private Long clicks;
+
 
 }

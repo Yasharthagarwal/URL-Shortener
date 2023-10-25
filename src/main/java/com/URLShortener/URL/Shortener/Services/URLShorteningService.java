@@ -6,6 +6,7 @@ import com.URLShortener.URL.Shortener.Entity.URLAttributes;
 import com.URLShortener.URL.Shortener.Repository.URLAnalyticsRepo;
 import com.URLShortener.URL.Shortener.Repository.URLVerificationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -34,47 +35,39 @@ public class URLShorteningService {
         }
 
 
-        public String getShortUrl(String longUrl) {
+        public ResponseEntity<?> getShortUrl(String longUrl) {
             String shortId = generateAlphanumeric(SHORT_ID_LENGTH);
             Optional<URLAttributes> presentUrlInDB = urlVerificationRepo.hasURL(longUrl);
-            LocalDateTime localDateTime = LocalDateTime.now();
 
             if(!presentUrlInDB.isEmpty()){
                 URLAttributes urlAttributes = presentUrlInDB.get();
 
-                URLAnalytics urlAnalytics = new URLAnalytics();
-                urlAnalytics.setLocalDateTime(localDateTime);
-                urlAnalytics.setUrlAttributes(urlAttributes);
-
-                urlAttributes.getUrlAnalytics().add(urlAnalytics);
-                urlAttributes.setClicks(urlAttributes.getClicks()+1);
-
-                urlAnalyticsRepo.save(urlAnalytics);
-                urlVerificationRepo.save(urlAttributes);
-
-                return "http://localhost:8080/" + urlAttributes.getShortId();
-
+                return ResponseEntity.ok().body("http://localhost:8080/" + urlAttributes.getShortId());
             }
             else{
                 URLAttributes urlAttributes = new URLAttributes();
                 urlAttributes.setLongUrl(longUrl);
                 urlAttributes.setShortId(shortId);
-                urlAttributes.setClicks(1L);
 
-
-                URLAnalytics urlAnalytics = new URLAnalytics();
-                urlAnalytics.setLocalDateTime(localDateTime);
-                Set<URLAnalytics> urlAnalyticsSet = new HashSet<>();
-                urlAnalyticsSet.add(urlAnalytics);
-                urlAnalytics.setUrlAttributes(urlAttributes);
-                urlAttributes.setUrlAnalytics(urlAnalyticsSet);
-
-
-                urlAnalyticsRepo.save(urlAnalytics);
                 urlVerificationRepo.save(urlAttributes);
 
-                return "http://localhost:8080/" + shortId;
+                return ResponseEntity.ok().body("http://localhost:8080/" + shortId);
 
             }
     }
+
+        public URLAttributes saveAnalytics(String shortId) {
+            Optional<URLAttributes> urlObject = urlVerificationRepo.findByshortId(shortId);
+            LocalDateTime localDateTime = LocalDateTime.now();
+            URLAnalytics urlAnalytics = new URLAnalytics();
+            urlAnalytics.setClicks(1L);
+            urlAnalytics.setLocalDateTime(localDateTime);
+            urlAnalytics.setUrlAttributes(urlObject.get());
+            urlObject.get().getUrlAnalytics().add(urlAnalytics);
+            urlAnalyticsRepo.save(urlAnalytics);
+
+            urlVerificationRepo.save(urlObject.get());
+
+            return urlObject.get();
+        }
 }

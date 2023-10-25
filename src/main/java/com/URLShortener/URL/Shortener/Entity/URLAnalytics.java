@@ -23,6 +23,9 @@ public class URLAnalytics {
     @Column(name = "dateTime")
     private LocalDateTime localDateTime;
 
+    @Column(name = "clicks")
+    private Long clicks;
+
 
     @JoinColumn(name = "urlId")
     @ManyToOne(cascade = CascadeType.ALL)

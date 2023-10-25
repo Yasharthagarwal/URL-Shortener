@@ -3,6 +3,7 @@ package com.URLShortener.URL.Shortener.Controllers;
 import com.URLShortener.URL.Shortener.DTO.URLAnalyticResponse;
 import com.URLShortener.URL.Shortener.Services.URLAnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -19,11 +20,9 @@ public class URLAnalyticsController {
 
 
     @GetMapping("/{url}")
-    public URLAnalyticResponse getAnalytics(@PathVariable("url") String url){
+    public ResponseEntity<?> getAnalytics(@PathVariable("url") String url){
 
-        String shortId = url.substring(url.length()-8);
-
-        return urlAnalyticsService.getAnalytics(shortId);
+        return urlAnalyticsService.getAnalytics(url);
 
     }
 
